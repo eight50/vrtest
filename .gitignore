@@ -70,3 +70,9 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+
+# Too large Image
+stars360_14400x7200.png
+
+# NuGetForUnity
+/[Aa]ssets/Packages
