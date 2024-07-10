@@ -5,16 +5,48 @@ using UnityEditor;
 using System.IO;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
-using UnityEngine.Windows;
-using System.Drawing;
+
 
 public class TextureImageImporter : AssetPostprocessor {
 
     static readonly string[] targetExtensions = { ".jpg" };
 
-
     void OnPreprocessAsset() {
+        bool isValidExtension = false;
+        foreach (var extension in targetExtensions) {
+            if (Path.GetExtension(assetPath).ToLower().Equals(extension)) {
+                // もし～Pixel以上の画像なら、
+                // if()
+                isValidExtension = true;
+                break;
+            }
+        }
 
+        if (!isValidExtension) {
+            return;
+        }
+
+        // assetPath:AssetPostprocessorのメンバで、インポートされたアセットと、インポートしようとしているアセットに対してのパス
+        var imagePath = assetPath;
+
+        // ImageSharpで画像分割
+        using (var image = Image.Load(imagePath)) {
+            var size = image.Size();
+            var x = 0;
+            var y = 0;
+            var width = size.Width / 2;
+            var height = size.Height / 2;
+
+            // Clone(deep copy)して、Cropping(矩形切り取り）する
+            using (var separatedImage = image.Clone(i => i.Crop(new Rectangle(x, y, width, height)))) {
+                separatedImage.Save(Path.Combine(Path.GetDirectoryName(imagePath), "separatedImage.png"));
+            }
+        }
+
+
+        // 分割した画像をインポート
+
+        // CreateTexture2D();
     }
 
     void OnPreprocessTexture() {
@@ -35,52 +67,15 @@ public class TextureImageImporter : AssetPostprocessor {
         importer.npotScale = TextureImporterNPOTScale.None;
         importer.alphaIsTransparency = true;
         importer.mipmapEnabled = false;
-        importer.lightmap = false;
-        importer.normalmap = false;
-        importer.linearTexture = false;
+        // importer.lightmap = false;
+        // importer.normalmap = false;
+        // importer.linearTexture = false;
         importer.wrapMode = TextureWrapMode.Repeat;
-        importer.generateCubemap = TextureImporterGenerateCubemap.None;
+        // importer.generateCubemap = TextureImporterGenerateCubemap.None;
     }
 
     void kari() {
-        bool isValidExtension = false;
-        foreach (var extension in targetExtensions) {
-            if (Path.GetExtension(assetPath).ToLower().Equals(extension)) {
-                // もし～Pixel以上の画像なら、
-                // if()
-                isValidExtension = true;
-                break;
-            }
-        }
 
-        if (!isValidExtension) {
-            return;
-        }
-
-        // assetPath:AssetPostprocessorの変数で、インポートされたアセットと、インポートしようとしているアセットに対してのパス
-        var imagePath = assetPath;
-
-
-        // ImageSharpで画像分割
-        using (var image = Image.Load(imagePath)) {
-            var size = image.Size();
-            var x = 0;
-            var y = 0;
-            var width = size.width / 2;
-            var height = size.height / 2;
-
-            // deep copyして、Cropping(矩形切り取り）する
-            using (var separatedImg = image.Clone(i => i.Crop(Rectangle(x, y, width, height)))) {
-
-                // separatedImg.Save(Path.Combine(outPath, "separatedImage.png"));
-
-            }
-        }
-
-
-        // 分割した画像をインポート
-        
-        // CreateTexture2D();
 
     }
 
