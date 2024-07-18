@@ -32,15 +32,26 @@ public class TextureImageImporter : AssetPostprocessor {
         // ImageSharpで画像分割
         using (var image = Image.Load(imagePath)) {
             var size = image.Size();
+            var rows = 2;
+            var cols = 2;
             var x = 0;
-            var y = 0;
-            var width = size.Width / 2;
-            var height = size.Height / 2;
+            var width = size.Width / rows;
+            var height = size.Height / cols;
 
-            // Clone(deep copy)して、Cropping(矩形切り取り）する
-            using (var separatedImage = image.Clone(i => i.Crop(new Rectangle(x, y, width, height)))) {
-                separatedImage.Save(Path.Combine(Path.GetDirectoryName(imagePath), "separatedImage.png"));
+            for (var i = 0; i < cols; i++) {
+                x += width * i;
+                var y = 0;
+                for (var j = 0; j < rows; j++) {
+                    y += height * j;
+
+                    // Clone(deep copy)して、Cropping(矩形切り取り）する
+                    using (var separatedImage = image.Clone(i => i.Crop(new Rectangle(x, y, width, height)))) {
+                        separatedImage.Save(Path.Combine(Path.GetDirectoryName(imagePath), "separatedImage" + i.ToString() + "_" + j.ToString() + ".png"));
+                    }
+                }
             }
+
+
         }
 
 
