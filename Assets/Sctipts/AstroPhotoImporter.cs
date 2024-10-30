@@ -6,6 +6,7 @@ using System.IO;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 using System;
+using static UnityEngine.UIElements.UxmlAttributeDescription;
 
 
 public class TextureImageImporter : AssetPostprocessor {
