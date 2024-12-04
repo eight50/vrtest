@@ -16,8 +16,10 @@ public class CameraHandler : MonoBehaviour
     bool isOrigin;
     bool isRotation;
     Vector3 changeRotation;
+    Vector3 currentRotation;
+    int MaxDis = 10;
     Vector2 leftStick;
-    Vector2 rightStick;
+    Vector2 rightStick;  
 
     // Start is called before the first frame update
     void Start()
@@ -31,6 +33,7 @@ public class CameraHandler : MonoBehaviour
         isOrigin = true;
         isRotation = false;
         changeRotation = Vector3.zero;
+        currentRotation = Vector3.zero;
     }
 
     // Update is called once per frame
@@ -41,30 +44,36 @@ public class CameraHandler : MonoBehaviour
 
         Debug.Log("x:" + leftStick.x + ", y:" + leftStick.y);
 
-        if(leftStick.x == 0 && leftStick.y == 0) {
-            if(!isOrigin) {
+        if (leftStick.x == 0 && leftStick.y == 0) {
+            if (!isOrigin) {
                 this.transform.position = Vector3.zero;
                 _zoomCamera.transform.position = Vector3.zero;
-                _zoomPanel.transform.position = new Vector3(0, 0, 3);
+                _zoomCamera.transform.rotation = Quaternion.Euler(Vector3.zero);
+                _zoomPanel.transform.position = new Vector3(0, 0, 3f);
+                _zoomPanel.transform.rotation = Quaternion.Euler(Vector3.zero);
                 _outLine.transform.position = new Vector3(0, 0, 3.2f);
+                _outLine.transform.rotation = Quaternion.Euler(Vector3.zero);
                 isOrigin = true;
                 isRotation = false;
                 _zoomPanel.SetActive(false);
                 _outLine.SetActive(false);
-                VRManager.useRotationTracking = true;             
+                VRManager.useRotationTracking = true;
             }
         } else {
-            if(!isRotation) {
+            if (!isRotation) {
                 Vector3 changePosition = new Vector3(0, 0, leftStick.y);
                 // HMDのx,y,z軸の角度取得
                 changeRotation = new Vector3(InputTracking.GetLocalRotation(XRNode.Head).eulerAngles.x, InputTracking.GetLocalRotation(XRNode.Head).eulerAngles.y, InputTracking.GetLocalRotation(XRNode.Head).eulerAngles.z);
+
+                currentRotation = changeRotation;
 
                 // OVRCameraRigの位置変更、zoomCameraで見る場合は移動しない
                 // this.transform.position += this.transform.rotation * (Quaternion.Euler(changeRotation) * changePosition);
 
                 // zoomCameraの位置変更
                 _zoomCamera.transform.position += _zoomCamera.transform.rotation * (Quaternion.Euler(changeRotation) * changePosition);
-                
+                _zoomCamera.transform.rotation = Quaternion.Euler(changeRotation);
+
 
                 // zoomPanelの位置、　角度変更
                 _zoomPanel.transform.position = _zoomPanel.transform.rotation * (Quaternion.Euler(changeRotation) * _zoomPanel.transform.position);
@@ -83,8 +92,28 @@ public class CameraHandler : MonoBehaviour
 
                 // this.transform.position += this.transform.rotation * (Quaternion.Euler(changeRotation) * changePosition);
 
-                _zoomCamera.transform.position += _zoomCamera.transform.rotation * (Quaternion.Euler(changeRotation) * changePosition);
+                if (_zoomCamera.transform.position.x < MaxDis
+                    &&_zoomCamera.transform.position.y < MaxDis
+                    &&_zoomCamera.transform.position.z < MaxDis) {
+                    _zoomCamera.transform.position += _zoomCamera.transform.rotation * changePosition;
+                }
+                    
+                // 右スティックでパネル移動
+                if (rightStick.x != 0f || rightStick.y != 0f) {
+                    changePosition = new Vector3(rightStick.x, rightStick.y, 0);
+                    // _zoomCamera.transform.position += _zoomCamera.transform.rotation * (Quaternion.Euler(changeRotation) * changePosition);
+                    _zoomCamera.transform.RotateAround(Vector3.zero, Vector3.up, changePosition.x);
+                    _zoomCamera.transform.RotateAround(Vector3.zero, Vector3.right, changePosition.y);
+                    // _zoomPanel.transform.position += _zoomPanel.transform.rotation * (Quaternion.Euler(changeRotation) * _zoomPanel.transform.position);
+                    _zoomPanel.transform.RotateAround(Vector3.zero, Vector3.up, changePosition.x);
+                    _zoomPanel.transform.RotateAround(Vector3.zero, Vector3.right, changePosition.y);
+                    // _outLine.transform.position += _outLine.transform.rotation * (Quaternion.Euler(changeRotation) * _outLine.transform.position);
+                    _outLine.transform.RotateAround(Vector3.zero, Vector3.up, changePosition.x);
+                    _outLine.transform.RotateAround(Vector3.zero, Vector3.right, changePosition.y);
+                }
             }
+
+            
         }
 
 
