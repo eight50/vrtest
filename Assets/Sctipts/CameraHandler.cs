@@ -20,6 +20,7 @@ public class CameraHandler : MonoBehaviour
     int MaxDis = 10;
     Vector2 leftStick;
     Vector2 rightStick;  
+    Quaternion HeadMountedRotation;
 
     // Start is called before the first frame update
     void Start()
@@ -37,10 +38,32 @@ public class CameraHandler : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
-    {
-        leftStick = OVRInput.Get(OVRInput.RawAxis2D.LThumbstick);
-        rightStick = OVRInput.Get(OVRInput.RawAxis2D.RThumbstick);
+    void Update() {
+        //leftStick = OVRInput.Get(OVRInput.RawAxis2D.LThumbstick);
+        //rightStick = OVRInput.Get(OVRInput.RawAxis2D.RThumbstick);
+
+        var devices = new List<InputDevice>();
+        var desiredCharacteristics = InputDeviceCharacteristics.Left;
+        InputDevices.GetDevicesWithCharacteristics(desiredCharacteristics, devices);
+        foreach(var device in devices) {
+            if (device.TryGetFeatureValue(CommonUsages.primary2DAxis, out leftStick)) { }
+        }
+        
+      
+        desiredCharacteristics = InputDeviceCharacteristics.Right;
+        InputDevices.GetDevicesWithCharacteristics(desiredCharacteristics, devices);
+        foreach (var device in devices) {
+            if (devices[0].TryGetFeatureValue(CommonUsages.primary2DAxis, out rightStick)) { }
+        }
+
+        desiredCharacteristics = InputDeviceCharacteristics.HeadMounted;
+        InputDevices.GetDevicesWithCharacteristics(desiredCharacteristics, devices);
+        foreach (var device in devices) {
+            if (devices[0].TryGetFeatureValue(CommonUsages.deviceRotation, out HeadMountedRotation)) { }
+        }
+
+
+
 
         Debug.Log("x:" + leftStick.x + ", y:" + leftStick.y);
 
@@ -63,7 +86,7 @@ public class CameraHandler : MonoBehaviour
             if (!isRotation) {
                 Vector3 changePosition = new Vector3(0, 0, leftStick.y);
                 // HMDのx,y,z軸の角度取得
-                changeRotation = new Vector3(InputTracking.GetLocalRotation(XRNode.Head).eulerAngles.x, InputTracking.GetLocalRotation(XRNode.Head).eulerAngles.y, InputTracking.GetLocalRotation(XRNode.Head).eulerAngles.z);
+                changeRotation = new Vector3(HeadMountedRotation.eulerAngles.x, HeadMountedRotation.eulerAngles.y, HeadMountedRotation.eulerAngles.z);
 
                 currentRotation = changeRotation;
 
