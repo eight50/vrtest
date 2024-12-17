@@ -1,6 +1,4 @@
-using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.XR;
 
@@ -53,13 +51,13 @@ public class CameraHandler : MonoBehaviour
         desiredCharacteristics = InputDeviceCharacteristics.Right;
         InputDevices.GetDevicesWithCharacteristics(desiredCharacteristics, devices);
         foreach (var device in devices) {
-            if (devices[0].TryGetFeatureValue(CommonUsages.primary2DAxis, out rightStick)) { }
+            if (device.TryGetFeatureValue(CommonUsages.primary2DAxis, out rightStick)) { }
         }
 
         desiredCharacteristics = InputDeviceCharacteristics.HeadMounted;
         InputDevices.GetDevicesWithCharacteristics(desiredCharacteristics, devices);
         foreach (var device in devices) {
-            if (devices[0].TryGetFeatureValue(CommonUsages.deviceRotation, out HeadMountedRotation)) { }
+            if (device.TryGetFeatureValue(CommonUsages.deviceRotation, out HeadMountedRotation)) { }
         }
 
 
