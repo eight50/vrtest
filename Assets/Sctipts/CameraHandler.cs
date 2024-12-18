@@ -1,3 +1,4 @@
+using Oculus.Interaction;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR;
@@ -6,6 +7,8 @@ using UnityEngine.XR;
 public class CameraHandler : MonoBehaviour
 {
     [SerializeField] private Camera _zoomCamera;
+    [SerializeField] private Transform _leftControllerTranceform;
+    [SerializeField] private Transform _rightControllerTranceform;
     [SerializeField] private GameObject _zoomPanel;
     [SerializeField] private GameObject _outLine;
 
@@ -18,6 +21,8 @@ public class CameraHandler : MonoBehaviour
     int MaxDis = 10;
     Vector2 leftStick;
     Vector2 rightStick;  
+    Quaternion leftControllerRotation;
+    Quaternion rightControllerRotation;
     Quaternion HeadMountedRotation;
 
     // Start is called before the first frame update
@@ -45,13 +50,14 @@ public class CameraHandler : MonoBehaviour
         InputDevices.GetDevicesWithCharacteristics(desiredCharacteristics, devices);
         foreach(var device in devices) {
             if (device.TryGetFeatureValue(CommonUsages.primary2DAxis, out leftStick)) { }
-        }
-        
+            if (device.TryGetFeatureValue(CommonUsages.deviceRotation, out leftControllerRotation)) { }
+        }        
       
         desiredCharacteristics = InputDeviceCharacteristics.Right;
         InputDevices.GetDevicesWithCharacteristics(desiredCharacteristics, devices);
         foreach (var device in devices) {
             if (device.TryGetFeatureValue(CommonUsages.primary2DAxis, out rightStick)) { }
+            if (device.TryGetFeatureValue(CommonUsages.deviceRotation, out rightControllerRotation)) { }        
         }
 
         desiredCharacteristics = InputDeviceCharacteristics.HeadMounted;
@@ -92,8 +98,12 @@ public class CameraHandler : MonoBehaviour
                 // this.transform.position += this.transform.rotation * (Quaternion.Euler(changeRotation) * changePosition);
 
                 // zoomCameraの位置変更
-                _zoomCamera.transform.position += _zoomCamera.transform.rotation * (Quaternion.Euler(changeRotation) * changePosition);
-                _zoomCamera.transform.rotation = Quaternion.Euler(changeRotation);
+                // _zoomCamera.transform.position += _zoomCamera.transform.rotation * (Quaternion.Euler(changeRotation) * changePosition);
+                // _zoomCamera.transform.rotation = Quaternion.Euler(changeRotation);
+
+                Vector3 rightRotation = new Vector3(rightControllerRotation.eulerAngles.x, rightControllerRotation.eulerAngles.y, rightControllerRotation.eulerAngles.z);
+                _zoomCamera.transform.position += _zoomCamera.transform.rotation * (Quaternion.Euler(rightRotation) * changePosition);
+                _zoomCamera.transform.rotation = Quaternion.Euler(rightRotation);
 
 
                 // zoomPanelの位置、　角度変更
