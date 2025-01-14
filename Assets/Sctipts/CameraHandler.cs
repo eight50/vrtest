@@ -1,4 +1,3 @@
-using Oculus.Interaction;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR;
@@ -7,8 +6,6 @@ using UnityEngine.XR;
 public class CameraHandler : MonoBehaviour
 {
     [SerializeField] private Camera _zoomCamera;
-    [SerializeField] private Transform _leftControllerTranceform;
-    [SerializeField] private Transform _rightControllerTranceform;
     [SerializeField] private GameObject _zoomPanel;
     [SerializeField] private GameObject _outLine;
 
@@ -18,7 +15,7 @@ public class CameraHandler : MonoBehaviour
     bool isRotation;
     Vector3 changeRotation;
     Vector3 currentRotation;
-    int MaxDis = 10;
+    float MaxDis = 10f;
     Vector2 leftStick;
     Vector2 rightStick;  
     Quaternion leftControllerRotation;
@@ -32,7 +29,7 @@ public class CameraHandler : MonoBehaviour
         _zoomPanel.SetActive(false);
         _outLine.SetActive(false);
         // OVRManegerのシングルトンオブジェクトを取得
-        VRManager = OVRManager.instance;
+        VRManager = OVRManager.instance; 
         VRDisplay = OVRManager.display;
         isOrigin = true;
         isRotation = false;
@@ -74,12 +71,12 @@ public class CameraHandler : MonoBehaviour
         if (leftStick.x == 0 && leftStick.y == 0) {
             if (!isOrigin) {
                 this.transform.position = Vector3.zero;
-                _zoomCamera.transform.position = Vector3.zero;
+                _zoomCamera.transform.position = new Vector3(0, 0, 3f);
                 _zoomCamera.transform.rotation = Quaternion.Euler(Vector3.zero);
                 _zoomPanel.transform.position = new Vector3(0, 0, 3f);
-                _zoomPanel.transform.rotation = Quaternion.Euler(Vector3.zero);
+                _zoomPanel.transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0));
                 _outLine.transform.position = new Vector3(0, 0, 3.2f);
-                _outLine.transform.rotation = Quaternion.Euler(Vector3.zero);
+                _outLine.transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0));
                 isOrigin = true;
                 isRotation = false;
                 _zoomPanel.SetActive(false);
@@ -108,9 +105,9 @@ public class CameraHandler : MonoBehaviour
 
                 // zoomPanelの位置、　角度変更
                 _zoomPanel.transform.position = _zoomPanel.transform.rotation * (Quaternion.Euler(changeRotation) * _zoomPanel.transform.position);
-                _zoomPanel.transform.rotation = Quaternion.Euler(changeRotation);
+                _zoomPanel.transform.rotation = _zoomPanel.transform.rotation * Quaternion.Euler(changeRotation);
                 _outLine.transform.position = _outLine.transform.rotation * (Quaternion.Euler(changeRotation) * _outLine.transform.position);
-                _outLine.transform.rotation = Quaternion.Euler(changeRotation);
+                _outLine.transform.rotation = _outLine.transform.rotation * Quaternion.Euler(changeRotation);
                 _zoomPanel.SetActive(true);
                 _outLine.SetActive(true);
 
@@ -134,13 +131,13 @@ public class CameraHandler : MonoBehaviour
                     changePosition = new Vector3(rightStick.x, rightStick.y, 0);
                     // _zoomCamera.transform.position += _zoomCamera.transform.rotation * (Quaternion.Euler(changeRotation) * changePosition);
                     _zoomCamera.transform.RotateAround(Vector3.zero, Vector3.up, changePosition.x);
-                    _zoomCamera.transform.RotateAround(Vector3.zero, Vector3.right, changePosition.y);
+                    _zoomCamera.transform.RotateAround(Vector3.zero, Vector3.left, changePosition.y);
                     // _zoomPanel.transform.position += _zoomPanel.transform.rotation * (Quaternion.Euler(changeRotation) * _zoomPanel.transform.position);
                     _zoomPanel.transform.RotateAround(Vector3.zero, Vector3.up, changePosition.x);
-                    _zoomPanel.transform.RotateAround(Vector3.zero, Vector3.right, changePosition.y);
+                    _zoomPanel.transform.RotateAround(Vector3.zero, Vector3.left, changePosition.y);
                     // _outLine.transform.position += _outLine.transform.rotation * (Quaternion.Euler(changeRotation) * _outLine.transform.position);
                     _outLine.transform.RotateAround(Vector3.zero, Vector3.up, changePosition.x);
-                    _outLine.transform.RotateAround(Vector3.zero, Vector3.right, changePosition.y);
+                    _outLine.transform.RotateAround(Vector3.zero, Vector3.left, changePosition.y);
                 }
             }
 

@@ -8,9 +8,9 @@ onBoardingDoNotAskAgain = true
 showPackageIndexes = false
 showStatusBar = false
 scopes = {
-	"last_search.E8DA15E5" = "planesurface"
+	"last_search.E8DA15E5" = "ovrray"
 	"OpenInspectorPreview.E8DA15E5" = "0"
-	"currentGroup.E8DA15E5" = "asset"
+	"currentGroup.E8DA15E5" = "scene"
 }
 providers = {
 	adb = {
@@ -62,6 +62,7 @@ providers = {
 objectSelectors = {
 }
 recentSearches = [
+	"ovrrayhelper"
 	"planesurface"
 	"contro"
 	"ovrdisplay"
@@ -69,10 +70,9 @@ recentSearches = [
 searchItemFavorites = [
 ]
 savedSearchesSortOrder = 0
-showSavedSearchPanel = false
+showSavedSearchPanel = true
 hideTabs = false
-expandedQueries = [
-]
+expandedQueries = [961552606]
 queryBuilder = false
 ignoredProperties = "id;name;classname;imagecontentshash"
 helperWidgetCurrentArea = "all"
